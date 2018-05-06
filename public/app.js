@@ -1,5 +1,4 @@
 $(document).ready(function() {
-
   var articleContainer = $("#articles");
 
   $(document).on("click", "#newScrape", handleArticleScrape);
@@ -61,7 +60,7 @@ $(document).ready(function() {
         article.summary,
         "</p>",
         "</div>",
-  
+
         "</div>"
       ].join("")
     );
@@ -109,33 +108,33 @@ $(document).ready(function() {
   // });
 
   // When you click the savenote button
-  $(document).on("click", "#savenote", function() {
-    // Grab the id associated with the article from the submit button
-    var thisId = $(this).attr("data-id");
+  // $(document).on("click", "#savenote", function() {
+  //   // Grab the id associated with the article from the submit button
+  //   var thisId = $(this).attr("data-id");
 
-    // Run a POST request to change the note, using what's entered in the inputs
-    $.ajax({
-      method: "POST",
-      url: "/articles/" + thisId,
-      data: {
-        // Value taken from title input
-        title: $("#titleinput").val(),
-        // Value taken from note textarea
-        body: $("#bodyinput").val()
-      }
-    })
-      // With that done
-      .then(function(data) {
-        // Log the response
-        console.log(data);
-        // Empty the notes section
-        $("#notes").empty();
-      });
+    // // Run a POST request to change the note, using what's entered in the inputs
+    // $.ajax({
+    //   method: "POST",
+    //   url: "/articles/" + thisId,
+    //   data: {
+    //     // Value taken from title input
+    //     title: $("#titleinput").val(),
+    //     // Value taken from note textarea
+    //     body: $("#bodyinput").val()
+    //   }
+    // })
+    //   // With that done
+    //   .then(function(data) {
+    //     // Log the response
+    //     console.log(data);
+    //     // Empty the notes section
+    //     $("#notes").empty();
+    //   });
 
     // Also, remove the values entered in the input and textarea for note entry
-    $("#titleinput").val("");
-    $("#bodyinput").val("");
-  });
+  //   $("#titleinput").val("");
+  //   $("#bodyinput").val("");
+  // });
   function handleArticleScrape() {
     // This function handles the user clicking any "scrape new article" buttons
     $.get("/scrape").then(function(data) {
@@ -151,15 +150,17 @@ $(document).ready(function() {
     // This function handles rendering note list items to our notes modal
     // Setting up an array of notes to render after finished
     // Also setting up a currentNote variable to temporarily store each note
-    console.log(data + "hi")
     var notesToRender = [];
     var currentNote;
     if (!data.notes.length) {
       // If we have no notes, just display a message explaing this
-      currentNote = ["<li class='list-group-item'>", "No notes for this article yet.", "</li>"].join("");
+      currentNote = [
+        "<li class='list-group-item'>",
+        "No notes for this article yet.",
+        "</li>"
+      ].join("");
       notesToRender.push(currentNote);
-    }
-    else {
+    } else {
       // If we do have notes, go through each one
       for (var i = 0; i < data.notes.length; i++) {
         // Constructs an li element to contain our noteText and a delete button
@@ -176,20 +177,22 @@ $(document).ready(function() {
         // Adding our currentNote to the notesToRender array
         notesToRender.push(currentNote);
       }
+      console.log(notesToRender);
+      console.log(currentNote);
     }
     // Now append the notesToRender to the note-container inside the note modal
     $(".note-container").append(notesToRender);
   }
 
-
-
   function handleArticleNotes() {
     // This function handles opending the notes modal and displaying our notes
     // We grab the id of the article to get notes for from the panel element the delete button sits inside
-    var currentArticle = $(this).parents(".panel").data();
+    var currentArticle = $(this)
+      .parents(".panel")
+      .data();
     // Grab any notes with this headline/article id
     $.get("/notes/" + currentArticle._id).then(function(data) {
-      console.log('')
+      console.log(currentArticle);
       // Constructing our initial HTML to add to the notes modal
       var modalText = [
         "<div class='container-fluid text-center'>",
@@ -203,17 +206,18 @@ $(document).ready(function() {
         "<button class='btn btn-success save'>Save Note</button>",
         "</div>"
       ].join("");
-      console.log(modalText)
+      console.log(modalText);
       // Adding the formatted HTML to the note modal
       bootbox.dialog({
         message: modalText,
         closeButton: true
       });
+
       var noteData = {
         _id: currentArticle._id,
         notes: data || []
       };
-      console.log(noteData + "hello")
+      console.log(JSON.stringify(noteData) + "hello");
       // Adding some information about the article and article notes to the save button for easy access
       // When trying to add a new note
       $(".btn.save").data("article", noteData);
@@ -227,16 +231,20 @@ $(document).ready(function() {
     // Setting a variable to hold some formatted data about our note,
     // grabbing the note typed into the input box
     var noteData;
-    var newNote = $(".bootbox-body textarea").val().trim();
+    var newNote = $(".bootbox-body textarea")
+      .val()
+      .trim();
     // If we actually have data typed into the note input field, format it
     // and post it to the "/api/notes" route and send the formatted noteData as well
     if (newNote) {
       noteData = {
         _id: $(this).data("article")._id,
-        noteText: newNote
+        title: $(this).data("article"),
+        body: newNote
       };
-      $.post("/api/notes", noteData).then(function() {
+      $.post("/notes", noteData).then(function(res, req) {
         // When complete, close the modal
+console.log(res)
         bootbox.hideAll();
       });
     }
@@ -249,7 +257,7 @@ $(document).ready(function() {
     var noteToDelete = $(this).data("_id");
     // Perform an DELETE request to "/api/notes/" with the id of the note we're deleting as a parameter
     $.ajax({
-      url: "/api/notes/" + noteToDelete,
+      url: "/notes/" + noteToDelete,
       method: "DELETE"
     }).then(function() {
       // When done, hide the modal
