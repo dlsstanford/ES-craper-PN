@@ -47,7 +47,7 @@ $(document).ready(function() {
         "<div class='panel panel-default'>",
         "<div class='panel-heading'>",
         "<h3>",
-        "<a class='article-link' target='_blank' href='espn.com" +
+        "<a class='article-link' target='_blank' href='http://www.espn.com" +
           article.link +
           "'>",
         article.title,
