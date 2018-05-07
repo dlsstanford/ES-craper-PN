@@ -28,7 +28,13 @@ app.use(express.static("public"));
 
 // By default mongoose uses callbacks for async queries, we're setting it to use promises (.then syntax) instead
 // Connect to the Mongo DB
-mongoose.connect("mongodb://heroku_k4696rkq:3b31lhn22209tf8ikd5vtei3r8@ds233739.mlab.com:33739/heroku_k4696rkq");
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongo-basketball"
+
+// Set mongoose to leverage built in JavaScript ES6 Promises
+mongoose.Promise = Promise;
+// Connect to the Mongo DB
+mongoose.connect(MONGODB_URI);
+
 
 // Routes
 
