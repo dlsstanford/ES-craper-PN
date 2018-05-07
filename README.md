@@ -23,5 +23,5 @@ Full Stack web application that allows users to view and leave comments on the l
 
 ## Grab a Copy
 
-1. Clone or fork and run using node server.js in the command line after navigating to root directory
+1. Clone or fork and run using `node server.js` in the command line after navigating to root directory
 2. Default runs on localhost:3000, can be configured in server.js file
