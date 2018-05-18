@@ -1,4 +1,4 @@
-# ES(craper)N
+# ES(craper)PN
 Full Stack web application that allows users to view and leave comments on the latest NBA news. The application utilizes both Cheerio and Mongoose to scrape information from ESPN.com/NBA and store the related information in a NoSQL Database
 > Demo Application can be viewed at: https://espn-scraper-105.herokuapp.com/
 
