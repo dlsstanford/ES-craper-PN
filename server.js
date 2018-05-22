@@ -141,7 +141,7 @@ res.json(dbNote)
 
 
 // Route for saving/updating an Article's associated Note
-app.post("/notes", function(req, res) {
+app.post("/articles/:id", function(req, res) {
   // save the new note that gets posted to the Notes collection
   // then find an article from the req.params.id
   // and update it's "note" property with the _id of the new note
@@ -154,13 +154,32 @@ app.post("/notes", function(req, res) {
       );
     })
     .then(function(dbArticle) {
-      // If the User was updated successfully, send it back to the client
+      // If the Article was updated successfully, send it back to the client
       res.json(dbArticle);
       console.log(dbArticle);
     })
     .catch(function(err) {
       res.json(err);
     });
+});
+
+app.post("/notes/:id", function(req, res) {
+  db.Note.create(req.body)
+  .then(function(dbNote) {
+    return db.Article.findOneAndUpdate(
+      { _id: req.params.id },
+      { note: dbNote._id },
+      { new: true }
+    );
+  })
+  .then(function(dbArticle) {
+    // If the Article was updated successfully, send it back to the client
+    res.json(dbArticle);
+    console.log(dbArticle);
+  })
+  .catch(function(err) {
+    res.json(err);
+  });
 });
 // Start the server
 app.listen(PORT, function() {

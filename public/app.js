@@ -112,26 +112,26 @@ $(document).ready(function() {
   //   // Grab the id associated with the article from the submit button
   //   var thisId = $(this).attr("data-id");
 
-    // // Run a POST request to change the note, using what's entered in the inputs
-    // $.ajax({
-    //   method: "POST",
-    //   url: "/articles/" + thisId,
-    //   data: {
-    //     // Value taken from title input
-    //     title: $("#titleinput").val(),
-    //     // Value taken from note textarea
-    //     body: $("#bodyinput").val()
-    //   }
-    // })
-    //   // With that done
-    //   .then(function(data) {
-    //     // Log the response
-    //     console.log(data);
-    //     // Empty the notes section
-    //     $("#notes").empty();
-    //   });
+  // // Run a POST request to change the note, using what's entered in the inputs
+  // $.ajax({
+  //   method: "POST",
+  //   url: "/articles/" + thisId,
+  //   data: {
+  //     // Value taken from title input
+  //     title: $("#titleinput").val(),
+  //     // Value taken from note textarea
+  //     body: $("#bodyinput").val()
+  //   }
+  // })
+  //   // With that done
+  //   .then(function(data) {
+  //     // Log the response
+  //     console.log(data);
+  //     // Empty the notes section
+  //     $("#notes").empty();
+  //   });
 
-    // Also, remove the values entered in the input and textarea for note entry
+  // Also, remove the values entered in the input and textarea for note entry
   //   $("#titleinput").val("");
   //   $("#bodyinput").val("");
   // });
@@ -191,10 +191,10 @@ $(document).ready(function() {
       .parents(".panel")
       .data();
     // Grab any notes with this headline/article id
-    $.get("/notes/" + currentArticle._id).then(function(data) {
+    $.get("/articles/" + currentArticle._id).then(function(data) {
       console.log(currentArticle);
       // Constructing our initial HTML to add to the notes modal
-      var modalText = [
+      var modalText = $([
         "<div class='container-fluid text-center'>",
         "<h4>Notes For Article: ",
         currentArticle._id,
@@ -205,11 +205,13 @@ $(document).ready(function() {
         "<textarea placeholder='New Note' rows='4' cols='60'></textarea>",
         "<button class='btn btn-success save'>Save Note</button>",
         "</div>"
-      ].join("");
-      console.log(modalText);
+      ].join("")
+    );
+
       // Adding the formatted HTML to the note modal
       bootbox.dialog({
         message: modalText,
+        id: currentArticle._id,
         closeButton: true
       });
 
@@ -217,7 +219,9 @@ $(document).ready(function() {
         _id: currentArticle._id,
         notes: data || []
       };
-      console.log(JSON.stringify(noteData) + "hello");
+
+      modalText.children("button").data("_id", currentArticle._id);
+
       // Adding some information about the article and article notes to the save button for easy access
       // When trying to add a new note
       $(".btn.save").data("article", noteData);
@@ -230,6 +234,8 @@ $(document).ready(function() {
     // This function handles what happens when a user tries to save a new note for an article
     // Setting a variable to hold some formatted data about our note,
     // grabbing the note typed into the input box
+    var thisId = $(this).data("_id")
+    console.log(thisId);
     var noteData;
     var newNote = $(".bootbox-body textarea")
       .val()
@@ -238,13 +244,23 @@ $(document).ready(function() {
     // and post it to the "/api/notes" route and send the formatted noteData as well
     if (newNote) {
       noteData = {
-        _id: $(this).data("article")._id,
-        title: $(this).data("article"),
+        _id: thisId,
+        title: thisId,
         body: newNote
       };
-      $.post("/notes", noteData).then(function(res, req) {
-        // When complete, close the modal
-console.log(res)
+      // Run a POST request to change the note, using what's entered in the inputs
+      $.ajax({
+        method: "POST",
+        url: "/articles/" + thisId,
+        data: {
+          // Value taken from note textarea
+          _id: thisId,
+          title: thisId,
+          body: noteData.body
+      }
+      })
+      .then(function() {
+        // When done, hide the modal
         bootbox.hideAll();
       });
     }
